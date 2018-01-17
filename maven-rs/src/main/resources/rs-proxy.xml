@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 版权所有(C)，2014，上海海鼎信息工程股份有限公司，保留所有权利。 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:http="http://cxf.apache.org/transports/http/configuration"
+  xmlns:sec="http://cxf.apache.org/configuration/security"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://cxf.apache.org/jaxrs
+    http://cxf.apache.org/schemas/jaxrs.xsd 
+    http://cxf.apache.org/transports/http/configuration
+    http://cxf.apache.org/schemas/configuration/http-conf.xsd
+    http://cxf.apache.org/configuration/security
+    http://cxf.apache.org/schemas/configuration/security.xsd">
+  <import resource="classpath:META-INF/cxf/cxf.xml" />
+  <bean id="maven-rs.jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
+    <property name="mapper">
+      <bean class="com.hd123.wsw.rs.utils.RSJsonObjectMapper">
+        <property name="dateFormat">
+          <bean class="java.text.SimpleDateFormat">
+            <constructor-arg value="yyyy-MM-dd'T'HH:mm:ss.SSSZ" />
+          </bean>
+        </property>
+      </bean>
+    </property>
+  </bean>
+  <!-- 服务代理 -->
+  <jaxrs:client id="userWebService"
+    address="http://localhost:8080/maven-server/rest/server/"
+    serviceClass="com.hd123.wsw.rs.webservice.UserWebService">
+    <jaxrs:providers>
+      <ref bean="maven-rs.jsonProvider" />
+    </jaxrs:providers>
+  </jaxrs:client>
+  <bean id="userServiceProxy" class="com.hd123.wsw.rs.proxy.UserServiceProxy"
+    p:userWebService-ref="userWebService" />
+
+</beans>
